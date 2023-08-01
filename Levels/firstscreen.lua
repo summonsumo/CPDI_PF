@@ -20,7 +20,7 @@ local scene = composer.newScene()
 function scene:create( event )
  
     local sceneGroup = self.view
-    local snap = snapping.new(100,100,50,50,"a")
+    local snap = snapping.new(100,100,50,50,"ABC")
 
     -- Code here runs when the scene is first created but has not yet appeared on screen
  
