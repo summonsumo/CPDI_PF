@@ -1,14 +1,22 @@
-local composer = require("composer")
+local composer = require( "composer" )
 local scene = composer.newScene()
+
+
+
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
- 
+ -- TODO : Change Reset Button Position (HUD Script)
+local function resetButtonListener(event)
+    composer.removeScene("Levels.firstlevel")
+    physics.pause()
+    composer.gotoScene("Levels.firstlevel")
 
+end
 
- 
+local playerscript = require("Scripts.Player")
  
  
 -- -----------------------------------------------------------------------------------
@@ -19,7 +27,6 @@ local scene = composer.newScene()
 function scene:create( event )
  
     local sceneGroup = self.view
-
 
     -- Code here runs when the scene is first created but has not yet appeared on screen
  
@@ -33,11 +40,24 @@ function scene:show( event )
     local phase = event.phase
  
     if ( phase == "will" ) then
+
+
+        local player = playerscript.new(sceneGroup,display.contentCenterX - 30,display.contentCenterY,1)
+
+        
+        local resetButton = display.newImageRect(sceneGroup, "Imagens/seta_lab2-semfundo.png", 300/6,250/6)
+        resetButton.x,resetButton.y = display.contentCenterX + 150, display.contentHeight - 20
+        resetButton.alpha = 0.5
+        resetButton:addEventListener("tap", resetButtonListener)
+        local resetText = display.newText(sceneGroup,"Reiniciar",display.contentCenterX + 150, display.contentHeight, "Assets/Commanders.ttf", 11 )
+        resetText.alpha = 0.9
+        resetText:setFillColor(0.9,1,0.6)
+
         -- Code here runs when the scene is still off screen (but is about to come on screen)
  
     elseif ( phase == "did" ) then
-        -- Code here runs when the scene is entirely on screen
 
+        -- Code here runs when the scene is entirely on screen
 
     end
 end
@@ -64,7 +84,6 @@ function scene:destroy( event )
  
     local sceneGroup = self.view
 
- 
 end
  
  

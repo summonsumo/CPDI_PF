@@ -44,10 +44,6 @@ settings =
 	{
 
 	},
-	    window =
-    {
-        defaultMode = "fullscreen",
-    },
 
 	--
 	-- Project section

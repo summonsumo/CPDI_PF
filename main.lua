@@ -1,16 +1,31 @@
-composer = require( "composer" )
+local composer = require( "composer" )
 local scene = composer.newScene()
 
-native.setProperty( "windowMode", "fullscreen" )
-native.setProperty( "mouseCursor", "arrow" ) 
-
-physics = require("physics")
+local physics = require("physics")
 physics.start()
+physics.pause()
+physics.setGravity(0, 0)
 
-snapping = require("scripts.snap")
+physics.setDrawMode( "hybrid" )
 
-audio.reserveChannels( 2 )
+display.setStatusBar( display.HiddenStatusBar )
+native.setProperty( "windowMode", "maximized" )
+
+audio.reserveChannels( 1 )
 audio.setMaxVolume(0.6,{channel = 1})
 audio.setMaxVolume(0.3,{channel = 2})
+    
+composer.gotoScene("Levels.firstlevel",{effect = "fade", time = 1000}) 
+--Change to Levels.intro
 
-composer.gotoScene("Levels.firstscreen",{effect = "fade", time = 1000}) 
+
+
+-- TODO : Finish Finish
+-- TODO : Change Commands
+-- TODO : Levels | Portals
+-- TODO : Enemy | Execute Enemy after command (if not nil)
+-- TODO : Audio
+-- TODO : Bullet
+
+-- Physics
+-- TODO : Distance based on origin point
