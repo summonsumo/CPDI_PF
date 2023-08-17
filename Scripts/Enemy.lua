@@ -1,7 +1,8 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 local Enemy = {}
-function Enemy.new(group,x,y)
+
+function Enemy.new(group,x,y,i)
     local huntFlag = true
 
     local sheetOptions = 
@@ -32,11 +33,11 @@ function Enemy.new(group,x,y)
 
     }
     --enemy
-    enemy = display.newSprite(group,enemySheet,enemySprite)
+    local enemy = display.newSprite(group,enemySheet,enemySprite)
     enemy.x,enemy.y = x,y
     enemy.xScale,enemy.yScale = 1.5,1.5
-    enemy:setFillColor(1,0.2,0.2)
-    enemy.id = "enemy"
+    enemy:setFillColor(0.1,0.6,0.1)
+    enemy.id = "Enemy"
     enemy:setSequence("Baixo")
     enemy:play()
 
@@ -44,35 +45,71 @@ function Enemy.new(group,x,y)
     enemy.isSensor = true
     enemy.isFixedRotation = true
 
-    local function createProj(x,y,direction)
-        local function kill(event)
-            if event.phase == "began" and event.other.id == "robot"then
-                display.remove(projectile)
-                composer.removeScene("Levels.firstlevel")
-                local dead = display.newText("ERRO ERRO ERRO", display.contentCenterX,display.contentCenterY,"Assets/Commanders.ttf",30)
-                dead.alpha = 0
-                transition.to(dead,{time = 600, alpha = 1,xScale = 1.5,yScale = 1.5})
-                timer.performWithDelay(1000, function () 
-                    display.remove(dead) 
-                    Runtime:removeEventListener("enterFrame",hunt)
-                    physics.pause()
-                    composer.gotoScene("Levels.firstlevel")
-                    physics.setGravity(0,0)
-                end )
-                huntFlag = true
-            end
-            if event.phase == "began" and event.other.id ~= "enemy" then
-                display.remove(projectile)
-                huntFlag = true
-            end
+
+    --TODO : movementEnemy - Hunt
+    local function movementEnemy(direction)
+        if direction == "l" then
+            enemy.x = enemy.x - 20
+            enemy:setSequence("Esquerda")
+            enemy:play()
+        elseif direction == "r" then
+            enemy.x = enemy.x + 20
+            enemy:setSequence("Direita")
+            enemy:play()
+        elseif direction == "u" then
+            enemy.y = enemy.y - 20
+            enemy:setSequence("Cima")
+            enemy:play()
+        elseif direction == "d" then
+            enemy.y = enemy.y + 20
+            enemy:setSequence("Baixo")
+            enemy:play()
         end
+    end
+
+    -- local projectileTable = {}
+    -- table.insert(projectileTable,projectile)
+    -- for i = #projectileTable, 1,-1 do
+    --     local thisProj = projectileTable[i]
+    --     display.remove(thisProj)    
+    --     table.remove(projectileTable,i)
+    -- end
+
+    local function createProj(group,x,y,direction)
         local projectile = display.newImageRect("Imagens/feijao1-removebg-preview.png",200/12,250/15)
-        projectile:setFillColor(0.3,0.7,0.2)
+        projectile:setFillColor(0.8,0.7,0.2)
+        projectile.alpha = 0.6
         projectile.x,projectile.y = x ,y + 10
         physics.addBody(projectile,"dynamic")
         projectile.isBullet = true
         projectile.isSensor = true
         projectile.id = "Bullet"
+
+        local function kill(event)
+            if event.phase == "began" then
+                if event.other.id == "Robot" then
+                    display.remove(projectile)
+
+                    composer.removeScene("Levels.firstlevel")
+                    local dead = display.newText("Runtime Error", display.contentCenterX,display.contentCenterY,"Assets/Commanders.ttf",33)
+                    dead.alpha = 0
+                    transition.to(dead,{time = 600, alpha = 1,xScale = 1.5,yScale = 1.5})
+                    timer.performWithDelay(1000, function () 
+                        display.remove(dead) 
+                        Runtime:removeEventListener("enterFrame",hunt)
+                        physics.pause()
+                        composer.gotoScene("Levels.firstlevel")
+                        physics.setGravity(0,0)
+                    end )
+                    huntFlag = true
+                elseif event.other.id ~= "Enemy" then
+                    display.remove(projectile)
+                    huntFlag = true
+                end
+            end
+        end
+
+
         if direction == "r" then
             projectile:setLinearVelocity(50,0)
         elseif direction == "l" then
@@ -90,33 +127,49 @@ function Enemy.new(group,x,y)
 
     local function hunt(event)
         objective = {robot.x,robot.y}
-        if huntFlag == true then
+        if huntFlag == true and enemy.x ~= nil then
             if y == objective[2] then
-                if objective[1] > x then
+                if objective[1] > x and enemy.sequence == "Direita" then
                     huntFlag = false
-                    createProj(enemy.x,enemy.y,"r")
-                else 
+                    createProj(group,enemy.x,enemy.y,"r")
+                elseif enemy.sequence == "Esquerda" then
                     huntFlag = false
-                    createProj(enemy.x,enemy.y,"l")
+                    createProj(group,enemy.x,enemy.y,"l")
                 end
-            end
-            if x == objective[1] then
-                if objective[2] > y then
+            elseif x == objective[1] then
+                if objective[2] > y and enemy.sequence == "Baixo" then
                     huntFlag = false
-                    createProj(enemy.x,enemy.y,"d")
-                else 
+                    createProj(group,enemy.x,enemy.y,"d")
+                elseif enemy.sequence == "Cima" then
                     huntFlag = false
-                    createProj(enemy.x,enemy.y,"u")
+                    createProj(group,enemy.x,enemy.y,"u")
                 end
             end
         end
+        if enemy.x ~= nil and moved == false then
+            local AI = math.random(1,2)
+            if x < objective[1] - 20 and AI == 1 then
+                moved = true
+                movementEnemy("r")
+            elseif x > objective[1] + 20 and AI == 1 then
+                moved = true
+                movementEnemy("l")
+            elseif y < objective [2] - 20 and AI == 2 then
+                moved = true
+                movementEnemy("d")
+            elseif y > objective[2] + 20 and AI == 2 then
+                moved = true
+                movementEnemy("u")
+            end
+        end 
        
     end
 
     local function death(event)
-        if event.phase == "began" and event.other.id ~= "Bullet" then
+        if event.phase == "began" and event.other.id ~= "Bullet" and event.other.id ~= "Attractor" and event.other.id ~= "Enemy" and event.other.id ~= "Wall" then
             Runtime:removeEventListener("enterFrame",hunt)
             display.remove(enemy)
+            enemyCount = enemyCount - 1
         end
     end
     Runtime:addEventListener("enterFrame", hunt)

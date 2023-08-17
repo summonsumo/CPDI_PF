@@ -3,6 +3,8 @@ local commands = {}
 function commands.new(group,robot)
     local walk = audio.loadSound("Assets/robo2.wav",1)
     posX,posY = 0,0
+    moved = true
+    
     local commandcount = 0
     local ccText = display.newText(group,"Nº Comandos: ".. commandcount, 90,15, "assets/Commanders.ttf", 15)
     ccText.alpha = 0.3
@@ -13,8 +15,7 @@ function commands.new(group,robot)
     local commandIndex = 1 
 
     local function moveRobot(dx, dy)
-        if not (robot == nil) then
-            print(robot.x,robot.y)
+        if not (robot.x == nil) then
             posX,posY = dx,dy
             robot.x = robot.x + dx 
             robot.y = robot.y + dy 
@@ -22,38 +23,38 @@ function commands.new(group,robot)
     end
     
     local function processCommand(command)
-        if robot ~= nil then
-            if command == "a" then
+        if robot.x ~= nil then
+            if command == "a" or command == "A" then
                 moveRobot(-20, 0)
                 robot:setSequence("Esquerda")
                 robot:play()
                 audio.play(walk,{duration = 500})
-            elseif command == "d" then
+            elseif command == "d" or command == "D" then
                 moveRobot(20, 0)
                 robot:setSequence("Direita")
                 robot:play()
                 audio.play(walk,{duration = 500})
-            elseif command == "w" then
+            elseif command == "w" or command == "W" then
                 moveRobot(0, -20)
                 robot:setSequence("Cima")
                 robot:play()
                 audio.play(walk,{duration = 500})
-            elseif command == "s" then
+            elseif command == "s" or command == "S" then
                 moveRobot(0, 20)
                 robot:setSequence("Baixo")
                 robot:play()
                 audio.play(walk,{duration = 500})
-            elseif command == "q" then
+            elseif command == "q" or command == "Q" then
                 robot.xScale = robot.xScale - 0.1
                 robot.yScale = robot.yScale - 0.1
                 timer.performWithDelay(900,function() physics.removeBody(robot) physics.addBody(robot, "dynamic", {box = {halfHeight = 7*robot.xScale, halfWidth = 7*robot.xScale, x = 0, y = 10}}) robot.isFixedRotation = true end)
                 
-            elseif command == "e" then
+            elseif command == "e" or command == "E" then
                 robot.xScale = robot.xScale + 0.1
                 robot.yScale = robot.yScale + 0.1
                 timer.performWithDelay(900,function() physics.removeBody(robot) physics.addBody(robot, "dynamic",  {box = {halfHeight = 7*robot.xScale, halfWidth = 7*robot.xScale, x = 0, y = 10}}) robot.isFixedRotation = true end)
                 
-            elseif command == "x" then
+            elseif command == "x" or command == "X" then
                 
                 if robot.sequence == "Esquerda" then
                     attractor = display.newRect(group,robot.x - robot.width, robot.y, 5, 5)
@@ -73,6 +74,7 @@ function commands.new(group,robot)
                     attractor:setLinearVelocity(0, 500)
                 end
                 attractor.alpha = 0
+                attractor.id = "Attractor"
 
 
             local function attraction(event)
@@ -95,6 +97,9 @@ function commands.new(group,robot)
             else
                 print("Unknown command: " .. command)
             end
+
+            timer.performWithDelay(1000,function() moved = false end)
+
         end
     end
     
@@ -107,6 +112,7 @@ function commands.new(group,robot)
     
         end
         commandText.text = "Comandos:\n"
+        moved = true
     end
     
     local function updateCommandText()

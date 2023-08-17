@@ -5,25 +5,44 @@ local levelObjs = {}
 function levelObjs.new(group,x,y,type)
 
     if type == "enemy" then
-        local enemy = enemyScript.new(group,x,y)
+        
+        local enemyTable = {}
+        local rng = math.random(1,5)
+        for i = 1, rng do
+            local enemy = enemyTable,enemyScript.new(group,x - 40 + (40 * i),y)
+            table.insert(enemyTable,enemy)
+        end
+        enemyCount = rng
+
+        local function finishStart(event)
+            if enemyCount == 0 then
+
+                Runtime:removeEventListener("enterFrame",finishStart)
+            end
+        end
+        Runtime:addEventListener("enterFrame",finishStart)
     end
 
 
     --crate
     if type == "crate" then
-        local crate = display.newImageRect(group,"Imagens/fundo_Fase0 - Intro.PNG", 2048/74,2048/86)
-        crate.x,crate.y = x,y
-        physics.addBody(crate, "dynamic", {bounce = 0, friction = 1, density = 5, box = {halfWidth = 10, halfHeight = 10}})
-        crate.isFixedRotation = true
-        
-        crate.id = "crate"
+        local crateTable = {}
+        for i = 1 , 3 do 
+            local crate = display.newImageRect(group,"Imagens/fundo_Fase0 - Intro.PNG", 2048/74,2048/86)
+            crate.x,crate.y = x,y + 20 * (i - 1)
+            physics.addBody(crate, "dynamic", {bounce = 0, friction = 1, density = 5, box = {halfWidth = 10, halfHeight = 10}})
+            crate.isFixedRotation = true
+            
+            crate.id = "crate"
 
-        local function collideMovement(event)
-            if event.phase == "began" and event.other.id == "robot" then
-                crate:setLinearVelocity(0,0)
+            local function collideMovement(event)
+                if event.phase == "began" and event.other.id == "Robot" then
+                    crate:setLinearVelocity(0,0)
+                end
             end
+            crate:addEventListener("collision",collideMovement)
+            table.insert(crateTable,crate)
         end
-        crate:addEventListener("collision",collideMovement)
     end
 
     --ice
@@ -36,7 +55,7 @@ function levelObjs.new(group,x,y,type)
         ice:setFillColor(0.3,0.6,0.8)
         local function collideMovement(event)
 
-            if event.phase == "began" and event.other.id == "robot" then
+            if event.phase == "began" and event.other.id == "Robot" then
                 ice:setLinearVelocity(posX*5,posY*5)
             end
             if event.phase == "began" and event.other.id == "crate" then
@@ -60,11 +79,11 @@ function levelObjs.new(group,x,y,type)
     end
 
     --wall
-    if type == "wall" then
+    if type == "barrier" then
         local wall = display.newRect(group,x,y,20,20)
         physics.addBody(wall, "static")
         wall.isFixedRotation = true
-        wall.id = "wall"
+        wall.id = "Barrier"
         wall:setFillColor(0.9,0.8,0.7)
     end
 
@@ -79,38 +98,47 @@ function levelObjs:bg(group,text,x,y,sX,sY)
     local wallLeft = display.newRect(group,0,0,30,display.contentHeight*3)
     wallLeft.alpha = 0
     physics.addBody(wallLeft,"static",{bounce = 0.5})
+    wallLeft.id = "Wall"
 
     local wallUp = display.newRect(group,0,0,display.contentWidth*3,30)
     wallUp.alpha = 0
     physics.addBody(wallUp,"static",{bounce = 0.5})
+    wallUp.id = "Wall"
 
     local wallRight = display.newRect(group,display.contentWidth,0,30,display.contentHeight*3)
     wallRight.alpha = 0
     physics.addBody(wallRight,"static",{bounce = 0.5})
+    wallRight.id = "Wall"
 
     local wallDown = display.newRect(group,0,display.contentHeight + 25,display.contentWidth*3,20)
     wallDown.alpha = 0
     physics.addBody(wallDown,"static",{bounce = 0.5})
+    wallDown.id = "Wall"
 
     local downCorner = display.newRect(group,display.contentCenterX + 110,display.contentCenterY + 53,240,70)
     downCorner.alpha = 0
     physics.addBody(downCorner,"static",{bounce = 0.5})
+    downCorner.id = "Wall"
 
     local leftCorner = display.newRect(group,display.contentCenterX,display.contentCenterY + 15,20,147)
     leftCorner.alpha = 0
     physics.addBody(leftCorner,"static",{bounce = 0.5})
+    leftCorner.id = "Wall"
 
     local rightCorner = display.newRect(group,display.contentCenterX + 25,display.contentCenterY - 51,40,15)
     rightCorner.alpha = 0
     physics.addBody(rightCorner,"static",{bounce = 0.5})
+    rightCorner.id = "Wall"
 
     local rightUpCorner = display.newRect(group,display.contentCenterX + 40,display.contentCenterY - 70,18,160)
     rightUpCorner.alpha = 0
     physics.addBody(rightUpCorner,"static",{bounce = 0.5})
+    rightUpCorner.id = "Wall"
 
     local downRightCorner = display.newRect(group,display.contentCenterX + 140,display.contentCenterY - 31,190,20)
     downRightCorner.alpha = 0
     physics.addBody(downRightCorner,"static",{bounce = 0.5})
+    downRightCorner.id = "Wall"
 
 end
 

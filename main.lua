@@ -6,15 +6,15 @@ physics.start()
 physics.pause()
 physics.setGravity(0, 0)
 
-
 display.setStatusBar( display.HiddenStatusBar )
 native.setProperty( "windowMode", "maximized" )
 
 audio.reserveChannels( 1 )
-audio.setMaxVolume(0.6,{channel = 1})
-audio.setMaxVolume(0.3,{channel = 2})
+audio.setMaxVolume(1,{channel = 1})
+audio.setMaxVolume(0.6,{channel = 2})
     
-composer.gotoScene("Levels.intro",{effect = "fade", time = 1000}) 
+composer.gotoScene("Levels.firstlevel",{effect = "fade", time = 1000})
+
 --Change to Levels.intro
 
 
@@ -22,9 +22,9 @@ composer.gotoScene("Levels.intro",{effect = "fade", time = 1000})
 -- TODO : Finish Finish
 -- TODO : Change Commands
 -- TODO : Levels | Portals
--- TODO : Enemy | Execute Enemy after command (if not nil)
+-- TODO : Wall Collision -> Player 
+
 -- TODO : Audio
--- TODO : Bullet
 
 -- Physics
 -- TODO : Distance based on origin point

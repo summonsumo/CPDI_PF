@@ -42,7 +42,7 @@ function scene:show( event )
     if ( phase == "will" ) then
 
 
-        local player = playerscript.new(sceneGroup,display.contentCenterX - 30,display.contentCenterY,1)
+        local player = playerscript.new(sceneGroup,display.contentCenterX - 40,display.contentCenterY,1)
 
         
         local resetButton = display.newImageRect(sceneGroup, "Imagens/seta_lab2-semfundo.png", 300/6,250/6)
