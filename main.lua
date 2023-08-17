@@ -13,7 +13,7 @@ audio.reserveChannels( 1 )
 audio.setMaxVolume(1,{channel = 1})
 audio.setMaxVolume(0.6,{channel = 2})
     
-composer.gotoScene("Levels.firstlevel",{effect = "fade", time = 1000})
+composer.gotoScene("Levels.intro",{effect = "fade", time = 1000})
 
 --Change to Levels.intro
 
