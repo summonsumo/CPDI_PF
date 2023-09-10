@@ -1,21 +1,20 @@
-composer = require( "composer" )
+local composer = require( "composer" )
 local scene = composer.newScene()
 
-native.setProperty( "windowMode", "fullscreen" )
-native.setProperty( "mouseCursor", "arrow" ) 
-
-display.setStatusBar(display.HiddenStatusBar)
-
-physics = require("physics")
+local physics = require("physics")
 physics.start()
-physics.setDrawMode("hybrid")
+physics.setGravity(0, 0)
 
-snapping = require("scripts.snap")
+display.setStatusBar( display.HiddenStatusBar )
+native.setProperty( "windowMode", "maximized" )
 
-audio.reserveChannels( 2 )
-audio.setMaxVolume(0.6,{channel = 1})
+audio.reserveChannels( 5 )
+audio.setMaxVolume(1,{channel = 1})
 audio.setMaxVolume(0.3,{channel = 2})
+audio.setMaxVolume(0.1,{channel = 3})
+audio.setMaxVolume(1,{channel = 4})
+audio.setMaxVolume(1,{channel = 5})
+    
+composer.gotoScene("Levels.intro",{effect = "fade", time = 1000})
 
-composer.gotoScene("Levels.firstscreen",{effect = "fade", time = 1000}) 
-
---TODO Text Input
+--Change to Levels.intro

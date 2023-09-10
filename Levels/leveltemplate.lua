@@ -1,14 +1,13 @@
-local composer = require( "composer" )
+local composer = require("composer")
 local scene = composer.newScene()
 
---TODO - Transitions
-
- 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
  
+
+
  
  
  
@@ -20,6 +19,7 @@ local scene = composer.newScene()
 function scene:create( event )
  
     local sceneGroup = self.view
+
 
     -- Code here runs when the scene is first created but has not yet appeared on screen
  
@@ -37,7 +37,8 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
- 
+
+
     end
 end
  
@@ -62,7 +63,7 @@ end
 function scene:destroy( event )
  
     local sceneGroup = self.view
-    -- Code here runs prior to the removal of scene's view
+
  
 end
  
