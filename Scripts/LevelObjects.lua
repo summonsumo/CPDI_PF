@@ -1,145 +1,267 @@
-local enemyScript = require("Scripts.Enemy")
+local composer = require("composer")
+
+local scene = composer.newScene()
+
+
+-- TODO : Search bloodDict
+        
+local bloodDictionary = {}
+-- + (A,B)
+bloodDictionary["A+"] = {"A+","O+","A-","O-"}
+bloodDictionary["B+"] = {"B+","O+","B-","O-"}
+-- - (A,B)
+bloodDictionary["A-"] = {"A-","O-"}
+bloodDictionary["B-"] = {"B-","O-"}
+
+-- + - AB
+bloodDictionary["AB+"] = {"A+","O+","B+","B-","A-","O-","AB+","AB-"}
+bloodDictionary["AB-"] = {"B-","A-","O-","AB-"}
+
+-- + - O
+bloodDictionary["O+"] = {"O+","O-"}
+bloodDictionary["O-"] = {"O-"}
+
+local donorTable = {}
+local heartTable = {}
 
 local levelObjs = {}
-
-function levelObjs.new(group,x,y,type)
-
-    if type == "enemy" then
-        
-        local enemyTable = {}
-        local rng = math.random(1,5)
-        for i = 1, rng do
-            local enemy = enemyTable,enemyScript.new(group,x - 40 + (40 * i),y)
-            table.insert(enemyTable,enemy)
+    function levelObjs.new(group,x,y,type,repetition)
+        if type == "bg" then
+            local bg 
+            bg:toBack()
         end
-        enemyCount = rng
 
-        local function finishStart(event)
-            if enemyCount == 0 then
+        local bloodtype = math.random(1,4)
+        local rh = math.random(1,2)
 
-                Runtime:removeEventListener("enterFrame",finishStart)
+        -- Receiver (Heart)
+        if type == "receiver" then
+
+            heartCount = repetition
+
+            for i = 1, repetition, 1 do
+                local heart = display.newImageRect(group,"Imagens/Hospital/Heart_symbol_c00.png",256/12,256/12)
+                heart:setFillColor(1,0,0)
+                heart.x = x 
+                heart.y = (y + 90) - 60 * i
+                heart.id = "receiver"
+                physics.addBody(heart,"static")
+                heart.isFixedRotation = true
+
+                local bloodtype = math.random(1,4)
+                local rh = math.random(1,2)
+                if bloodtype == 1 then
+                    if rh == 1 then
+                        
+                        heart.name = "A+"
+                    else
+                        
+                        heart.name = "A-"
+                    end
+
+                elseif bloodtype == 2 then
+                    if rh == 1 then
+                        
+                        heart.name = "B+"
+                    else
+                        
+                        heart.name = "B-"
+                    end
+
+                elseif bloodtype == 3 then
+                    if rh == 1 then
+                        
+                        heart.name = "AB+"
+                    else
+                        
+                        heart.name = "AB-"
+                    end
+
+                elseif bloodtype == 4 then
+                    if rh == 1 then
+                        
+                        heart.name = "O+"
+                    else
+                        
+                        heart.name = "O-"
+                    end
+                    
+                end
+                local heartText = display.newText(group,heart.name,x + 3,(y + 110) - 60 * i,native.systemFont,20)
+                heartText:setFillColor(1,0.4,0.6)
+                -- DonorTable
+                table.insert(heartTable,heart)
+                table.insert(heartTable,heartText)
             end
         end
-        Runtime:addEventListener("enterFrame",finishStart)
+
+        -- Donor
+
+        if type == "donor" then
+        
+            donorCount = repetition
+
+            for i = 1, repetition , 1 do
+                local donor = display.newImageRect(group,"Imagens/Hospital/blood_bag.png",675/30,1200/30)
+                donor.x = x
+                donor.y = (y - 40) + 40 * i
+                donor.id = "donor"
+                physics.addBody(donor,"dynamic")
+
+                local bloodtype = math.random(1,4)
+                local rh = math.random(1,2)
+                if bloodtype == 1 then
+                    if rh == 1 then
+                        
+                        donor.name = "A+"
+                    else
+                        
+                        donor.name = "A-"
+                    end
+
+                elseif bloodtype == 2 then
+                    if rh == 1 then
+                        
+                        donor.name = "B+"
+                    else
+                        
+                        donor.name = "B-"
+                    end
+
+                elseif bloodtype == 3 then
+                    if rh == 1 then
+                        
+                        donor.name = "AB+"
+                    else
+                        
+                        donor.name = "AB-"
+                    end
+
+                elseif bloodtype == 4 then
+                    if rh == 1 then
+                        
+                        donor.name = "O+"
+                    else
+                        
+                        donor.name = "O-"
+                    end
+                    
+                end
+
+                local donorText = display.newText(group,donor.name,x + 35,y + 5,native.systemFont,20)
+                donorText:setFillColor(0.6,0.3,0.8)
+
+                local function donorTextpos(event)
+                    if donorText.x ~= nil then
+                        donorText.x = donor.x + 35
+                        donorText.y = donor.y + 5
+                    end
+
+                end
+                Runtime:addEventListener("enterFrame",donorTextpos)
+                local startX, startY = nil
+
+                local function donorclick(event)
+
+                    if event.phase == "began" and event.target.OffsetX == nil then
+                        display.currentStage:setFocus(event.target)
+                        startX, startY = event.x, event.y
+                        event.target.touchOffsetX = event.x - event.target.x
+                        event.target.touchOffsetY = event.y - event.target.y
+                    elseif event.phase == "moved" then
+                        event.target.x = event.x - event.target.touchOffsetX
+                        event.target.y = event.y - event.target.touchOffsetY
+                    elseif event.phase == "ended" or phase == "cancelled" then
+                        display.currentStage:setFocus(nil)
+                    end
+                    return true
+                end
+
+                function table.contains(table, element)
+                    for _, value in pairs(table) do
+                    if value == element then
+                        return true
+                    end
+                    end
+                    return false
+                end
+
+                local function donorCollision(self,event)
+                    if event.phase == "began" and event.other.id == "receiver" then
+                        if table.contains(bloodDictionary[event.other.name],self.name) then
+                            timer.performWithDelay(10,function() 
+                                scoreUpdate(group,"+")
+                                Runtime:removeEventListener("enterFrame",donorTextpos)
+                                donorText:removeSelf() 
+                                donor:removeSelf()                        
+                            end)
+                        else
+                            timer.performWithDelay(10,function() 
+                                scoreUpdate(group,"-")
+                                Runtime:removeEventListener("enterFrame",donorTextpos)
+                                donorText:removeSelf() 
+                                donor:removeSelf()                        
+                            end)
+                        end
+                        donorCount = donorCount - 1
+                    end
+                end
+                local function repeated(event)
+                    if heartCount == 0 then
+                        levelObjs.new(group,display.contentCenterX + 180, display.contentHeight - 90,"receiver",5)
+                        Runtime:removeEventListener("enterFrame",repeated)
+                    end
+                    if donorCount == 0 then
+                        levelObjs.new(group,50, display.contentCenterY - 100,"donor",5)
+                        Runtime:removeEventListener("enterFrame",repeated)
+                    end
+                end
+                Runtime:addEventListener("enterFrame",repeated)
+                donor:addEventListener("touch", donorclick)
+
+                donor.collision = donorCollision
+                donor:addEventListener("collision")
+
+                -- DonorTable
+                table.insert(donorTable,donor)
+                table.insert(donorTable,donorText)
+            end
+        end
+
+    end
+    function levelObjs:menu(group,x,y,number)
+        local button = display.newRoundedRect(group,x,y,50,30,15)
+        local buttonText = display.newText(group,"Ajuda",x,y,native.systemFont,15)
+        buttonText:setFillColor(0.5,0.6,0.6)
+        local function menutap(event)
+            composer.setVariable("number",number)
+            composer.showOverlay("Levels.menu",{effect = "fromTop", time = 500, isModal = true})
+        end
+        button:addEventListener("tap",menutap)
     end
 
+    function levelObjs:reload(group,x,y)
+        local reloadBut = display.newImageRect(group,"Imagens/Hospital/arrows.png",128/6,128/6)
+        reloadBut.x = x
+        reloadBut.y = y
+        reloadBut.alpha = 0.4
 
-    --crate
-    if type == "crate" then
-        local crateTable = {}
-        for i = 1 , 3 do 
-            local crate = display.newImageRect(group,"Imagens/fundo_Fase0 - Intro.PNG", 2048/74,2048/86)
-            crate.x,crate.y = x,y + 20 * (i - 1)
-            physics.addBody(crate, "dynamic", {bounce = 0, friction = 1, density = 5, box = {halfWidth = 10, halfHeight = 10}})
-            crate.isFixedRotation = true
-            
-            crate.id = "crate"
 
-            local function collideMovement(event)
-                if event.phase == "began" and event.other.id == "Robot" then
-                    crate:setLinearVelocity(0,0)
+        local function reloadAll(event)
+            for i = #donorTable, 1, -1 do
+                if donorTable[i] ~= nil then
+                    display.remove(donorTable[i])
                 end
             end
-            crate:addEventListener("collision",collideMovement)
-            table.insert(crateTable,crate)
+            donorCount = 0
+            for i = #heartTable, 1, -1 do
+                if heartTable[i] ~= nil then
+                    display.remove(heartTable[i])
+                end
+            end
+            heartCount = 0
+
         end
+        reloadBut:addEventListener("touch",reloadAll)
     end
-
-    --ice
-    if type == "ice" then
-        local ice = display.newImageRect(group,"Imagens/fundo_Fase0 - Intro.PNG", 2048/74,2048/86)
-        ice.x,ice.y = x,y
-        physics.addBody(ice, "dynamic", {density = 0.5, box = {halfWidth = 10, halfHeight = 10}} )
-        ice.isFixedRotation = true
-        ice.id = "ice"
-        ice:setFillColor(0.3,0.6,0.8)
-        local function collideMovement(event)
-
-            if event.phase == "began" and event.other.id == "Robot" then
-                ice:setLinearVelocity(posX*5,posY*5)
-            end
-            if event.phase == "began" and event.other.id == "crate" then
-                ice:setLinearVelocity(0,0)
-            end
-            if event.other.id == "finish" then
-                
-            end
-        end
-    
-        ice:addEventListener("collision", collideMovement)
-    end
-
-    --finish
-    if type == "finish" then
-        local finish = display.newRect(group,x,y,20,20)
-        physics.addBody(finish, "static")
-        finish.isFixedRotation = true
-        finish.id = "finish"
-        finish:setFillColor(0.1,0.2,0.3)
-    end
-
-    --wall
-    if type == "barrier" then
-        local wall = display.newRect(group,x,y,20,20)
-        physics.addBody(wall, "static")
-        wall.isFixedRotation = true
-        wall.id = "Barrier"
-        wall:setFillColor(0.9,0.8,0.7)
-    end
-
-end
-function levelObjs:bg(group,text,x,y,sX,sY)
-    local bg = display.newImageRect(group,text,x,y)
-    bg.x,bg.y = display.contentCenterX,display.contentCenterY + 15
-    bg.xScale,bg.yScale = sX,sY
-    bg:toBack()
-
-    -- Walls
-    local wallLeft = display.newRect(group,0,0,30,display.contentHeight*3)
-    wallLeft.alpha = 0
-    physics.addBody(wallLeft,"static",{bounce = 0.5})
-    wallLeft.id = "Wall"
-
-    local wallUp = display.newRect(group,0,0,display.contentWidth*3,30)
-    wallUp.alpha = 0
-    physics.addBody(wallUp,"static",{bounce = 0.5})
-    wallUp.id = "Wall"
-
-    local wallRight = display.newRect(group,display.contentWidth,0,30,display.contentHeight*3)
-    wallRight.alpha = 0
-    physics.addBody(wallRight,"static",{bounce = 0.5})
-    wallRight.id = "Wall"
-
-    local wallDown = display.newRect(group,0,display.contentHeight + 25,display.contentWidth*3,20)
-    wallDown.alpha = 0
-    physics.addBody(wallDown,"static",{bounce = 0.5})
-    wallDown.id = "Wall"
-
-    local downCorner = display.newRect(group,display.contentCenterX + 110,display.contentCenterY + 53,240,70)
-    downCorner.alpha = 0
-    physics.addBody(downCorner,"static",{bounce = 0.5})
-    downCorner.id = "Wall"
-
-    local leftCorner = display.newRect(group,display.contentCenterX,display.contentCenterY + 15,20,147)
-    leftCorner.alpha = 0
-    physics.addBody(leftCorner,"static",{bounce = 0.5})
-    leftCorner.id = "Wall"
-
-    local rightCorner = display.newRect(group,display.contentCenterX + 25,display.contentCenterY - 51,40,15)
-    rightCorner.alpha = 0
-    physics.addBody(rightCorner,"static",{bounce = 0.5})
-    rightCorner.id = "Wall"
-
-    local rightUpCorner = display.newRect(group,display.contentCenterX + 40,display.contentCenterY - 70,18,160)
-    rightUpCorner.alpha = 0
-    physics.addBody(rightUpCorner,"static",{bounce = 0.5})
-    rightUpCorner.id = "Wall"
-
-    local downRightCorner = display.newRect(group,display.contentCenterX + 140,display.contentCenterY - 31,190,20)
-    downRightCorner.alpha = 0
-    physics.addBody(downRightCorner,"static",{bounce = 0.5})
-    downRightCorner.id = "Wall"
-
-end
-
 return levelObjs
