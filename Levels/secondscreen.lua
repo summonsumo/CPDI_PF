@@ -75,6 +75,7 @@ local function texts(group,name,text,textNum)
                 button:addEventListener("tap", function ()
                     audio.stop()
                     audio.dispose(xav3)
+                    composer.removeScene("Levels.secondscreen")
                     composer.gotoScene("Levels.blood1",{effect = "fade", time = 1000})
                     end)
         end
@@ -230,7 +231,7 @@ end
 function scene:destroy( event )
  
     local sceneGroup = self.view
-
+    
 end
  
  

@@ -10,6 +10,7 @@ local scene = composer.newScene()
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 local function otherScene(event)
+    composer.removeScene("Levels.firstscreen")
     composer.gotoScene("Levels.secondscreen", {effect = fade,time = 500})
 end
 -- create()

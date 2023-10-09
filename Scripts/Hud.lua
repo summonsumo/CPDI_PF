@@ -40,6 +40,7 @@ scoreUpdate = function(group,signal)
     end
     scoreText.text = "Pontos: "..score
     if score >= 1000 then
+        composer.removeScene("Levels.blood1")
         composer.gotoScene("Levels.thirdscreen", {effect = "fromBottom", time = 1000})
     end
 end

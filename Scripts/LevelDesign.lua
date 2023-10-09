@@ -1,4 +1,4 @@
-local levelobjects = require("scripts.LevelObjects")
+local levelobjects = require("Scripts.LevelObjects")
 
 
 local level = {}

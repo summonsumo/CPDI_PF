@@ -113,6 +113,7 @@ local function texts(group,name,text,textNum)
                 button:addEventListener("tap", function ()
                     audio.stop()
                     audio.dispose(xav3)
+                    composer.removeScene("Levels.thirdscreen")
                     composer.gotoScene("Levels.credits",{effect = "fromTop", time = 2000})
                     end)
         end

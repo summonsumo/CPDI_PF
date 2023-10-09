@@ -46,6 +46,7 @@ function scene:create( event )
 
     local passar = display.newRect(sceneGroup,display.contentCenterX + 120,display.contentHeight - 10, 30,20)
     passar:addEventListener("tap",function()
+            composer.removeScene("Levels.blood1")
             composer.gotoScene("Levels.thirdscreen", {effect = "fromBottom", time = 1000})end)
     passar:setFillColor(0.3,0.7,0.3)
     passar.alpha = 0.6
