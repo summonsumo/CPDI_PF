@@ -6,7 +6,8 @@ physics.start()
 physics.setGravity(0, 0)
 
 display.setStatusBar( display.HiddenStatusBar )
-native.setProperty( "windowMode", "maximized" )
+
+native.setProperty( "windowMode", "normal" )
 
 audio.reserveChannels( 5 )
 audio.setMaxVolume(1,{channel = 1})

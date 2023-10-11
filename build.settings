@@ -37,6 +37,15 @@ settings =
 		},
 	},
 
+
+
+    window = {
+        defaultMode = "windowed",        
+        defaultViewWidth = 1024,         
+        defaultViewHeight = 768,      
+        resizable = true,
+		enableMinimizeButton = true,              
+    },
 	--
 	-- Plugins section
 	--
